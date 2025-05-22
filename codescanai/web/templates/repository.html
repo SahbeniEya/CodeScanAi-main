@@ -1,0 +1,113 @@
+{% extends 'base.html' %}
+
+{% block title %}CodeScanAI - {{ repo.name }}{% endblock %}
+
+{% block content %}
+<div class="jumbotron">
+    <div class="d-flex align-items-center">
+        <i class="fab fa-github fa-3x mr-4"></i>
+        <div>
+            <h1>{{ repo.full_name }}</h1>
+            <p class="lead">{{ repo.description or 'No description available' }}</p>
+        </div>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-lg-4">
+        <div class="card shadow mb-4">
+            <div class="card-header bg-primary text-white">
+                <h5 class="card-title mb-0"><i class="fas fa-info-circle mr-2"></i>Repository Details</h5>
+            </div>
+            <div class="card-body">
+                <ul class="list-group list-group-flush">
+                    <li class="list-group-item d-flex justify-content-between align-items-center">
+                        <div><i class="fas fa-star text-warning mr-2"></i> Stars</div>
+                        <span class="badge bg-primary rounded-pill">{{ repo.stars }}</span>
+                    </li>
+                    <li class="list-group-item d-flex justify-content-between align-items-center">
+                        <div><i class="fas fa-code-branch text-info mr-2"></i> Forks</div>
+                        <span class="badge bg-primary rounded-pill">{{ repo.forks }}</span>
+                    </li>
+                    <li class="list-group-item d-flex justify-content-between align-items-center">
+                        <div><i class="fas fa-exclamation-circle text-danger mr-2"></i> Open Issues</div>
+                        <span class="badge bg-primary rounded-pill">{{ repo.open_issues }}</span>
+                    </li>
+                    <li class="list-group-item d-flex justify-content-between align-items-center">
+                        <div><i class="fas fa-code text-success mr-2"></i> Default Branch</div>
+                        <span class="badge bg-secondary rounded-pill">{{ repo.default_branch }}</span>
+                    </li>
+                </ul>
+
+                <div class="mt-4">
+                    <a href="{{ repo.url }}" class="btn btn-outline-primary w-100" target="_blank">
+                        <i class="fab fa-github mr-2"></i>View on GitHub
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <div class="card shadow">
+            <div class="card-header bg-secondary text-white">
+                <h5 class="card-title mb-0"><i class="fas fa-history mr-2"></i>Recent Activity</h5>
+            </div>
+            <div class="card-body">
+                <p class="text-muted">Recent commits and pull requests will be shown here.</p>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-lg-8">
+        <div class="card shadow mb-4">
+            <div class="card-header bg-success text-white">
+                <h5 class="card-title mb-0"><i class="fas fa-shield-alt mr-2"></i>Security Scan</h5>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-7">
+                        <h4>Run a Security Scan</h4>
+                        <p>Scan this repository to find security vulnerabilities and generate fixes automatically.</p>
+                        <ul class="mb-4">
+                            <li><i class="fas fa-check text-success mr-2"></i> Detect security vulnerabilities</li>
+                            <li><i class="fas fa-check text-success mr-2"></i> Generate AI-powered fixes</li>
+                            <li><i class="fas fa-check text-success mr-2"></i> Create pull requests with fixes</li>
+                            <li><i class="fas fa-check text-success mr-2"></i> View security metrics dashboard</li>
+                        </ul>
+                    </div>
+                    <div class="col-md-5 d-flex align-items-center justify-content-center">
+                        <form action="{{ url_for('scan') }}" method="get">
+                            <input type="hidden" name="repo" value="{{ repo.full_name }}">
+                            <button type="submit" class="btn btn-primary btn-lg">
+                                <i class="fas fa-search mr-2"></i>Scan Repository
+                            </button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="card shadow">
+            <div class="card-header bg-info text-white">
+                <h5 class="card-title mb-0"><i class="fas fa-chart-line mr-2"></i>Security Overview</h5>
+            </div>
+            <div class="card-body">
+                <p class="text-center text-muted mb-4">No security scans have been run on this repository yet.</p>
+                <div class="text-center">
+                    <form action="{{ url_for('scan') }}" method="get">
+                        <input type="hidden" name="repo" value="{{ repo.full_name }}">
+                        <button type="submit" class="btn btn-outline-primary">
+                            <i class="fas fa-search mr-2"></i>Run First Scan
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="mt-4 text-center">
+    <a href="{{ url_for('repositories') }}" class="btn btn-secondary">
+        <i class="fas fa-arrow-left mr-2"></i>Back to Repositories
+    </a>
+</div>
+{% endblock %}

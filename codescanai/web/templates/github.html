@@ -1,0 +1,146 @@
+{% extends 'base.html' %}
+
+{% block title %}CodeScanAI - GitHub Integration{% endblock %}
+
+{% block content %}
+<div class="jumbotron">
+    <h1><i class="fab fa-github mr-3"></i>GitHub Integration</h1>
+    <p class="lead">Connect to GitHub to scan repositories and create pull requests with fixes.</p>
+</div>
+
+<div class="row">
+    <div class="col-lg-6">
+        <div class="card shadow">
+            <div class="card-header">
+                <h5 class="card-title mb-0"><i class="fas fa-key mr-2"></i>GitHub Authentication</h5>
+            </div>
+            <div class="card-body">
+                <form method="post" class="form" role="form">
+                    {{ form.hidden_tag() }}
+                    <div class="form-group">
+                        {{ form.token.label(class="form-label") }}
+                        <div class="input-group">
+                            <span class="input-group-text"><i class="fas fa-lock"></i></span>
+                            {{ form.token(class="form-control", placeholder="Enter your GitHub personal access token") }}
+                        </div>
+                        <small class="form-text text-muted mt-2">Your token is used to authenticate with GitHub and is not stored on our servers.</small>
+                    </div>
+                    <div class="form-group mt-4 text-center">
+                        {{ form.submit(class="btn btn-primary btn-lg") }}
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-lg-6">
+        <div class="card shadow">
+            <div class="card-header bg-primary text-white">
+                <h5 class="card-title mb-0"><i class="fas fa-info-circle mr-2"></i>Benefits of GitHub Integration</h5>
+            </div>
+            <div class="card-body">
+                <ul class="list-group mb-4">
+                    <li class="list-group-item d-flex align-items-center">
+                        <i class="fas fa-search text-primary mr-3"></i>
+                        <div>
+                            <strong>Scan Repositories</strong>
+                            <p class="mb-0 text-muted">Scan your GitHub repositories for security vulnerabilities</p>
+                        </div>
+                    </li>
+                    <li class="list-group-item d-flex align-items-center">
+                        <i class="fas fa-code-branch text-success mr-3"></i>
+                        <div>
+                            <strong>Automatic Pull Requests</strong>
+                            <p class="mb-0 text-muted">Create pull requests with fixes for detected vulnerabilities</p>
+                        </div>
+                    </li>
+                    <li class="list-group-item d-flex align-items-center">
+                        <i class="fas fa-chart-line text-info mr-3"></i>
+                        <div>
+                            <strong>Security Metrics</strong>
+                            <p class="mb-0 text-muted">Track security metrics across your repositories</p>
+                        </div>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="mt-5">
+    <div class="card shadow">
+        <div class="card-header bg-secondary text-white">
+            <h5 class="card-title mb-0"><i class="fas fa-question-circle mr-2"></i>How to Create a GitHub Token</h5>
+        </div>
+        <div class="card-body">
+            <div class="row">
+                <div class="col-md-6">
+                    <div class="steps-container">
+                        <div class="step">
+                            <div class="step-number">1</div>
+                            <div class="step-content">
+                                <h5>Access Token Settings</h5>
+                                <p>Go to <a href="https://github.com/settings/tokens" target="_blank" class="btn btn-sm btn-outline-primary"><i class="fab fa-github mr-1"></i>GitHub Personal Access Tokens</a></p>
+                            </div>
+                        </div>
+                        <div class="step">
+                            <div class="step-number">2</div>
+                            <div class="step-content">
+                                <h5>Generate New Token</h5>
+                                <p>Click "Generate new token" and select "Generate new token (classic)"</p>
+                            </div>
+                        </div>
+                        <div class="step">
+                            <div class="step-number">3</div>
+                            <div class="step-content">
+                                <h5>Name Your Token</h5>
+                                <p>Give your token a descriptive name like "CodeScanAI Integration"</p>
+                            </div>
+                        </div>
+                        <div class="step">
+                            <div class="step-number">4</div>
+                            <div class="step-content">
+                                <h5>Select Scopes</h5>
+                                <p>Select the following scopes:</p>
+                                <ul class="list-group">
+                                    <li class="list-group-item"><code>repo</code> (Full control of repositories)</li>
+                                    <li class="list-group-item"><code>read:org</code> (Read organization membership)</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="steps-container">
+                        <div class="step">
+                            <div class="step-number">5</div>
+                            <div class="step-content">
+                                <h5>Generate Token</h5>
+                                <p>Click "Generate token" at the bottom of the page</p>
+                            </div>
+                        </div>
+                        <div class="step">
+                            <div class="step-number">6</div>
+                            <div class="step-content">
+                                <h5>Copy Token</h5>
+                                <p>Copy the generated token (you will only see it once!)</p>
+                            </div>
+                        </div>
+                        <div class="step">
+                            <div class="step-number">7</div>
+                            <div class="step-content">
+                                <h5>Paste Token</h5>
+                                <p>Paste the token in the form above and click "Connect to GitHub"</p>
+                            </div>
+                        </div>
+                        <div class="alert alert-warning mt-4">
+                            <i class="fas fa-exclamation-triangle mr-2"></i>
+                            <strong>Security Note:</strong> GitHub tokens are sensitive information. Do not share them with others and store them securely.
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

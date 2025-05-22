@@ -1,0 +1,1391 @@
+{% extends 'base.html' %}
+
+{% block title %}CodeScanAI - Scan Results{% endblock %}
+
+{% block content %}
+<div class="results-container">
+    <div class="results-header">
+        <h1>Scan Results</h1>
+        <p class="lead">Comprehensive security analysis of your code.</p>
+    </div>
+
+    {% if no_results %}
+    <div class="jumbotron">
+        <div class="text-center">
+            <i class="fas fa-search fa-4x text-muted mb-4"></i>
+            <h2>No Scan Results Available</h2>
+            <p class="lead">You haven't run a scan yet or your previous scan results have expired.</p>
+            <div class="mt-4">
+                <a href="{{ url_for('scan') }}" class="btn btn-primary btn-lg">
+                    <i class="fas fa-search mr-2"></i> Run a New Scan
+                </a>
+                <a href="{{ url_for('github') }}" class="btn btn-secondary btn-lg ml-3">
+                    <i class="fab fa-github mr-2"></i> Connect to GitHub
+                </a>
+            </div>
+        </div>
+    </div>
+    {% else %}
+
+    <!-- Tabs for different sections -->
+    <ul class="nav nav-tabs results-tabs" id="resultsTabs" role="tablist">
+        <li class="nav-item" role="presentation">
+            <button class="nav-link active" id="summary-tab" data-bs-toggle="tab" data-bs-target="#summary"
+                type="button" role="tab" aria-controls="summary" aria-selected="true">
+                <i class="fas fa-chart-pie mr-2"></i> Summary
+            </button>
+        </li>
+        <li class="nav-item" role="presentation">
+            <button class="nav-link" id="vulnerabilities-tab" data-bs-toggle="tab" data-bs-target="#vulnerabilities"
+                type="button" role="tab" aria-controls="vulnerabilities" aria-selected="false">
+                <i class="fas fa-bug mr-2"></i> Vulnerabilities
+            </button>
+        </li>
+        <li class="nav-item" role="presentation">
+            <button class="nav-link" id="fixes-tab" data-bs-toggle="tab" data-bs-target="#fixes" type="button"
+                role="tab" aria-controls="fixes" aria-selected="false">
+                <i class="fas fa-wrench mr-2"></i> Fixes
+            </button>
+        </li>
+        <li class="nav-item" role="presentation">
+            <button class="nav-link" id="metrics-tab" data-bs-toggle="tab" data-bs-target="#metrics" type="button"
+                role="tab" aria-controls="metrics" aria-selected="false">
+                <i class="fas fa-chart-line mr-2"></i> Metrics
+            </button>
+        </li>
+        <li class="nav-item" role="presentation">
+            <button class="nav-link" id="raw-tab" data-bs-toggle="tab" data-bs-target="#raw" type="button" role="tab"
+                aria-controls="raw" aria-selected="false">
+                <i class="fas fa-code mr-2"></i> Raw Results
+            </button>
+        </li>
+    </ul>
+
+    <!-- Tab content -->
+    <div class="tab-content" id="resultsTabsContent">
+        <!-- Summary Tab -->
+        <div class="tab-pane fade show active" id="summary" role="tabpanel" aria-labelledby="summary-tab">
+            <div class="results-section">
+                <h2>Scan Summary</h2>
+                <div class="metrics-container">
+                    <div class="metric-card">
+                        <div class="icon">
+                            <i class="fas fa-shield-alt"></i>
+                        </div>
+                        <div class="metric-value" id="total-vulnerabilities">...</div>
+                        <div class="metric-label">Total Vulnerabilities</div>
+                    </div>
+                    <div class="metric-card">
+                        <div class="icon">
+                            <i class="fas fa-check-circle"></i>
+                        </div>
+                        <div class="metric-value" id="fixed-vulnerabilities">...</div>
+                        <div class="metric-label">Fixed Vulnerabilities</div>
+                    </div>
+                    <div class="metric-card">
+                        <div class="icon">
+                            <i class="fas fa-percentage"></i>
+                        </div>
+                        <div class="metric-value" id="fix-success-rate">...</div>
+                        <div class="metric-label">Fix Success Rate</div>
+                    </div>
+                </div>
+
+                <h3 class="mt-5">Severity Distribution</h3>
+                <div class="progress mb-3">
+                    <div class="progress-bar progress-bar-danger" role="progressbar" style="width: 0%"
+                        id="high-progress">High</div>
+                    <div class="progress-bar progress-bar-warning" role="progressbar" style="width: 0%"
+                        id="medium-progress">Medium</div>
+                    <div class="progress-bar progress-bar-success" role="progressbar" style="width: 0%"
+                        id="low-progress">Low</div>
+                </div>
+
+                <div class="severity-distribution">
+                    <div class="severity-item">
+                        <div class="severity-count severity-high" id="high-count">...</div>
+                        <div class="severity-label">High</div>
+                    </div>
+                    <div class="severity-item">
+                        <div class="severity-count severity-medium" id="medium-count">...</div>
+                        <div class="severity-label">Medium</div>
+                    </div>
+                    <div class="severity-item">
+                        <div class="severity-count severity-low" id="low-count">...</div>
+                        <div class="severity-label">Low</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Vulnerabilities Tab -->
+        <div class="tab-pane fade" id="vulnerabilities" role="tabpanel" aria-labelledby="vulnerabilities-tab">
+            <div class="results-section">
+                <h2>Detected Vulnerabilities</h2>
+                <div id="vulnerabilities-container">
+                    <!-- Vulnerabilities will be inserted here by JavaScript -->
+                    <div class="text-center">
+                        <div class="spinner-border" role="status">
+                            <span class="visually-hidden">Loading...</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Fixes Tab -->
+        <div class="tab-pane fade" id="fixes" role="tabpanel" aria-labelledby="fixes-tab">
+            <div class="results-section">
+                <h2>Generated Fixes</h2>
+                <div id="fixes-container">
+                    <!-- Fixes will be inserted here by JavaScript -->
+                    <div class="text-center">
+                        <div class="spinner-border" role="status">
+                            <span class="visually-hidden">Loading...</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Metrics Tab -->
+        <div class="tab-pane fade" id="metrics" role="tabpanel" aria-labelledby="metrics-tab">
+            <div class="results-section">
+                <h2>Security Metrics</h2>
+                <div id="metrics-container">
+                    <!-- Metrics will be inserted here by JavaScript -->
+                    <div class="text-center">
+                        <div class="spinner-border" role="status">
+                            <span class="visually-hidden">Loading...</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Raw Results Tab -->
+        <div class="tab-pane fade" id="raw" role="tabpanel" aria-labelledby="raw-tab">
+            <div class="results-section">
+                <h2>Raw Scan Results</h2>
+                <div class="markdown-content">
+                    {{ results | safe }}
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="mt-4 mb-5">
+        <a href="{{ url_for('scan') }}" class="btn btn-primary">Run Another Scan</a>
+        <a href="{{ url_for('dashboard') }}" class="btn btn-secondary">View Dashboard</a>
+
+        <!-- Manual PR Creation -->
+        <div class="card mt-4">
+            <div class="card-header bg-primary text-white">
+                <h3 class="mb-0">Create Pull Request Manually</h3>
+            </div>
+            <div class="card-body">
+                <p>If automatic PR creation fails, you can create a PR manually using the following steps:</p>
+                <ol>
+                    <li>Download the fixed code files</li>
+                    <li>Create a new branch in your repository</li>
+                    <li>Upload the fixed files</li>
+                    <li>Create a pull request</li>
+                </ol>
+
+                <div class="alert alert-info">
+                    <strong>Note:</strong> You need to have write access to the repository to create a pull request.
+                </div>
+
+                <form action="/download_fixes" method="post" class="mt-3">
+                    <div class="mb-3">
+                        <label for="repo_url" class="form-label">Repository URL</label>
+                        <input type="text" class="form-control" id="repo_url" name="repo_url"
+                            placeholder="https://github.com/username/repo.git" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="github_token" class="form-label">GitHub Token</label>
+                        <input type="password" class="form-control" id="github_token" name="github_token"
+                            placeholder="ghp_xxxxxxxxxxxxxxxxxxxxxxxxxxxx" value="{{ github_token }}" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="branch_name" class="form-label">Branch Name (optional)</label>
+                        <input type="text" class="form-control" id="branch_name" name="branch_name"
+                            placeholder="security-fixes-YYYYMMDD">
+                    </div>
+                    <button type="submit" class="btn btn-success">Download Fixed Files</button>
+                </form>
+
+                <div class="mt-4">
+                    <h4>Alternative Method: Direct PR Creation</h4>
+                    <p>You can also create a PR directly using our command-line tool:</p>
+                    <pre><code>python create_pr.py https://github.com/username/repo.git YOUR_GITHUB_TOKEN</code></pre>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endif %}
+
+<!-- JavaScript to parse and display the results -->
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        // Skip processing if no results
+        if (document.querySelector('.jumbotron')) {
+            return;
+        }
+
+        // Check if this is a DAST-only scan
+        const isDastOnly = {% if is_dast_only %}true{% else %}false{% endif %};
+    const scanType = "{{ scan_type if scan_type else 'all' }}";
+    console.log("Scan type:", scanType);
+    console.log("Is DAST only:", isDastOnly);
+
+    // Parse the markdown content to extract data
+    const markdownContent = document.querySelector('.markdown-content').innerHTML;
+
+    // Extract vulnerability counts
+    const highMatch = markdownContent.match(/\*\*High Severity\*\*: (\d+)/i);
+    const mediumMatch = markdownContent.match(/\*\*Medium Severity\*\*: (\d+)/i);
+    const lowMatch = markdownContent.match(/\*\*Low Severity\*\*: (\d+)/i);
+    const totalMatch = markdownContent.match(/\*\*Total\*\*: (\d+)/i);
+
+    // Extract fix metrics
+    const fixesAttemptedMatch = markdownContent.match(/\*\*Total Fixes Attempted\*\*: (\d+)/i);
+    const successfulFixesMatch = markdownContent.match(/\*\*Successful Fixes\*\*: (\d+)/i);
+    const fixRateMatch = markdownContent.match(/\*\*Fix Success Rate\*\*: ([\d\.]+)%/i);
+
+    // Update summary metrics with animation
+    const animateCounter = (element, target, duration = 1000) => {
+        const start = 0;
+        const increment = target > 0 ? 1 : 0;
+        const stepTime = Math.abs(Math.floor(duration / target));
+        let current = start;
+
+        const timer = setInterval(() => {
+            current += increment;
+            element.textContent = current;
+            if (current >= target) {
+                element.textContent = target;
+                clearInterval(timer);
+            }
+        }, stepTime);
+    };
+
+    // Update summary metrics with animation
+    if (totalMatch) {
+        const totalElement = document.getElementById('total-vulnerabilities');
+        totalElement.textContent = '0';
+        animateCounter(totalElement, parseInt(totalMatch[1]));
+    }
+
+    if (successfulFixesMatch) {
+        const fixedElement = document.getElementById('fixed-vulnerabilities');
+        fixedElement.textContent = '0';
+        animateCounter(fixedElement, parseInt(successfulFixesMatch[1]));
+    }
+
+    if (fixRateMatch) {
+        const rateElement = document.getElementById('fix-success-rate');
+        rateElement.textContent = '0%';
+
+        // Animate percentage
+        const targetRate = parseFloat(fixRateMatch[1]);
+        const duration = 1000;
+        const start = 0;
+        const stepTime = Math.abs(Math.floor(duration / (targetRate * 10)));
+        let current = start;
+
+        const timer = setInterval(() => {
+            current += 0.1;
+            rateElement.textContent = current.toFixed(1) + '%';
+            if (current >= targetRate) {
+                rateElement.textContent = targetRate + '%';
+                clearInterval(timer);
+            }
+        }, stepTime);
+    }
+
+    // Update severity counts and progress bars
+    const highCount = highMatch ? parseInt(highMatch[1]) : 0;
+    const mediumCount = mediumMatch ? parseInt(mediumMatch[1]) : 0;
+    const lowCount = lowMatch ? parseInt(lowMatch[1]) : 0;
+    const total = totalMatch ? parseInt(totalMatch[1]) : 0;
+
+    if (highMatch) document.getElementById('high-count').textContent = highCount;
+    if (mediumMatch) document.getElementById('medium-count').textContent = mediumCount;
+    if (lowMatch) document.getElementById('low-count').textContent = lowCount;
+
+    // Update progress bars
+    if (total > 0) {
+        const highPercent = (highCount / total * 100).toFixed(1) + '%';
+        const mediumPercent = (mediumCount / total * 100).toFixed(1) + '%';
+        const lowPercent = (lowCount / total * 100).toFixed(1) + '%';
+
+        const highProgress = document.getElementById('high-progress');
+        const mediumProgress = document.getElementById('medium-progress');
+        const lowProgress = document.getElementById('low-progress');
+
+        // Set initial width to 0
+        highProgress.style.width = '0%';
+        mediumProgress.style.width = '0%';
+        lowProgress.style.width = '0%';
+
+        // Animate progress bars
+        setTimeout(() => {
+            highProgress.style.width = highPercent;
+            highProgress.textContent = highCount > 0 ? `High (${highPercent})` : '';
+
+            mediumProgress.style.width = mediumPercent;
+            mediumProgress.textContent = mediumCount > 0 ? `Medium (${mediumPercent})` : '';
+
+            lowProgress.style.width = lowPercent;
+            lowProgress.textContent = lowCount > 0 ? `Low (${lowPercent})` : '';
+        }, 300);
+    }
+
+    // Extract vulnerabilities using a more robust approach
+    let vulnerabilitiesHTML = '';
+    let fixesHTML = '';
+
+    // First, try to find SAST vulnerabilities (BANDIT, PYTHON, JAVA, etc.) and DAST vulnerabilities
+    const sastVulnSections = markdownContent.match(/(?:BANDIT|PYTHON|JAVA|DAST)-[A-Z0-9-]+:[\s\S]*?(?=(?:BANDIT|PYTHON|JAVA|DAST|SCA)-[A-Z0-9-]+:|$)/g) || [];
+
+    // Process SAST vulnerabilities first
+    for (const section of sastVulnSections) {
+        // Extract basic information
+        const titleMatch = section.match(/(?:BANDIT|PYTHON|JAVA|DAST)-[A-Z0-9-]+:[^\n]+/);
+        const fileMatch = section.match(/\*\*File\*\*: `?([^`\n]+)`?/);
+        const lineMatch = section.match(/\*\*Line\*\*: (\d+)/);
+        const confidenceMatch = section.match(/\*\*Confidence\*\*: ([^\n]+)/);
+
+        if (!titleMatch || !fileMatch || !lineMatch || !confidenceMatch) continue;
+
+        const title = titleMatch[0];
+        const file = fileMatch[1];
+        const line = lineMatch[1];
+        const confidence = confidenceMatch[1];
+
+        // Extract code blocks
+        const codeBlocksMatch = section.match(/```[\s\S]*?```/g);
+
+        // Handle cases where there might be only one code block (vulnerable code without fix)
+        let vulnerableCode = '';
+        let suggestedFix = '';
+
+        if (codeBlocksMatch && codeBlocksMatch.length >= 1) {
+            // Extract the vulnerable code
+            const vulnerableCodeBlock = codeBlocksMatch[0];
+            vulnerableCode = vulnerableCodeBlock.replace(/```[\s\S]*?\n/, '').replace(/```$/, '');
+
+            // Extract the suggested fix if available
+            if (codeBlocksMatch.length >= 2) {
+                const suggestedFixBlock = codeBlocksMatch[1];
+                suggestedFix = suggestedFixBlock.replace(/```[\s\S]*?\n/, '').replace(/```$/, '');
+            } else {
+                // If no fix is available, check if there's a message about it
+                const noFixMatch = section.match(/\*\*No fix available\*\*|\*\*Fix generation failed\*\*/);
+                if (noFixMatch) {
+                    suggestedFix = "No fix available - API credit limit exceeded or fix generation failed";
+                }
+            }
+        } else {
+            // If no code blocks found, try to extract code directly
+            const vulnerableCodeMatch = section.match(/\*\*Vulnerable Code:\*\*\n([\s\S]*?)(?=\*\*Suggested Fix:\*\*|\*\*No fix available\*\*|$)/);
+            if (vulnerableCodeMatch) {
+                vulnerableCode = vulnerableCodeMatch[1].trim();
+            }
+
+            const suggestedFixMatch = section.match(/\*\*Suggested Fix:\*\*\n([\s\S]*?)(?=\*\*|$)/);
+            if (suggestedFixMatch) {
+                suggestedFix = suggestedFixMatch[1].trim();
+            }
+        }
+
+        // Clean up file path to remove temporary directory prefix
+        const cleanFilePath = file.replace(/C:\\Users\\azizi\\AppData\\Local\\Temp\\codescan-[a-z0-9_]+\\/, '');
+
+        const severity = title.includes('HIGH') ? 'high' : title.includes('LOW') ? 'low' : 'medium';
+
+        // Create vulnerability card for SAST or DAST vulnerability
+        vulnerabilitiesHTML += `
+                <div class="vulnerability-card vulnerability-${severity}">
+                    <div class="vulnerability-card-header">
+                        ${title}
+                    </div>
+                    <div class="vulnerability-card-body">
+                        <div class="vulnerability-meta">
+                            <span><strong>${title.includes('DAST') ? 'URL:' : 'File:'}</strong> ${cleanFilePath}</span>
+                            <span><strong>Line:</strong> ${line}</span>
+                            <span><strong>Confidence:</strong> ${confidence}</span>
+                            ${title.includes('DAST') ? `<span><strong>Type:</strong> Web Vulnerability</span>` : ''}
+                        </div>
+                        <div class="code-block">
+                            <div class="code-block-header">${title.includes('DAST') ? 'Vulnerable URL/Endpoint' : 'Vulnerable Code'}</div>
+                            <pre><code>${vulnerableCode.trim() || (title.includes('DAST') ? cleanFilePath : "Code not available")}</code></pre>
+                        </div>
+                        ${title.includes('DAST') ? `
+                        <div class="alert alert-danger mt-3">
+                            <i class="fas fa-exclamation-triangle me-2"></i>
+                            <strong>Security Risk:</strong> This URL contains a vulnerability that could be exploited by attackers.
+                        </div>` : ''}
+                    </div>
+                </div>
+            `;
+
+        // Create fix card for SAST or DAST vulnerability
+        if (vulnerableCode.trim()) {
+            fixesHTML += `
+                    <div class="vulnerability-card">
+                        <div class="vulnerability-card-header">
+                            Fix for ${title} in ${cleanFilePath}:${line}
+                        </div>
+                        <div class="vulnerability-card-body">
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <div class="code-block">
+                                        <div class="code-block-header">${title.includes('DAST') ? 'Vulnerable URL/Endpoint' : 'Original Code'}</div>
+                                        <pre><code>${vulnerableCode.trim() || (title.includes('DAST') ? cleanFilePath : "Code not available")}</code></pre>
+                                    </div>
+                                    ${title.includes('DAST') ? `
+                                    <div class="alert alert-warning mt-2">
+                                        <i class="fas fa-info-circle me-2"></i>
+                                        <strong>DAST Finding:</strong> This is a web vulnerability detected by dynamic scanning.
+                                    </div>` : ''}
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="fix-suggestion">
+                                        <h4>Suggested Fix</h4>
+                                        <div class="code-block">
+                                            <pre><code>${suggestedFix.trim() || (title.includes('DAST') ? "Web vulnerabilities require manual remediation" : "**No fix suggestion available**")}</code></pre>
+                                        </div>
+                                        ${!suggestedFix.trim() && !title.includes('DAST') ? `
+                                        <div class="alert alert-warning mt-2">
+                                            <i class="fas fa-exclamation-triangle me-2"></i>
+                                            Fix generation may have failed due to API credit limits. Try running the scan again with your new API key.
+                                        </div>` : ''}
+                                        ${title.includes('DAST') ? `
+                                        <div class="alert alert-info mt-2">
+                                            <i class="fas fa-shield-alt me-2"></i>
+                                            <strong>Remediation Steps:</strong>
+                                            <ul class="mb-0 mt-2">
+                                                <li>Validate all user inputs</li>
+                                                <li>Implement proper input sanitization</li>
+                                                <li>Use parameterized queries for database operations</li>
+                                                <li>Apply content security policies</li>
+                                                <li>Consider using a web application firewall</li>
+                                            </ul>
+                                        </div>` : ''}
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                `;
+        }
+    }
+
+    // Now look for the standard vulnerability sections
+    const vulnerabilitySections = markdownContent.match(/### \d+\. [\s\S]*?---/g) || [];
+
+    // Process each vulnerability section
+    for (const section of vulnerabilitySections) {
+        // Extract basic information
+        const titleMatch = section.match(/### \d+\. ([^\n]+)/);
+        const fileMatch = section.match(/\*\*File\*\*: `([^`]+)`/);
+        const lineMatch = section.match(/\*\*Line\*\*: (\d+)/);
+        const confidenceMatch = section.match(/\*\*Confidence\*\*: ([^\n]+)/);
+
+        if (!titleMatch || !fileMatch || !lineMatch || !confidenceMatch) continue;
+
+        const title = titleMatch[1];
+        const file = fileMatch[1];
+        const line = lineMatch[1];
+        const confidence = confidenceMatch[1];
+
+        // Clean up file path to remove temporary directory prefix
+        const cleanFilePath = file.replace(/C:\\Users\\azizi\\AppData\\Local\\Temp\\codescan-[a-z0-9_]+\\/, '');
+
+        // Extract code blocks
+        const codeBlocksMatch = section.match(/```[\s\S]*?```/g);
+
+        // Handle cases where there might be only one code block (vulnerable code without fix)
+        let vulnerableCode = '';
+        let suggestedFix = '';
+
+        if (codeBlocksMatch && codeBlocksMatch.length >= 1) {
+            // Extract the vulnerable code
+            const vulnerableCodeBlock = codeBlocksMatch[0];
+            vulnerableCode = vulnerableCodeBlock.replace(/```[\s\S]*?\n/, '').replace(/```$/, '');
+
+            // Extract the suggested fix if available
+            if (codeBlocksMatch.length >= 2) {
+                const suggestedFixBlock = codeBlocksMatch[1];
+                suggestedFix = suggestedFixBlock.replace(/```[\s\S]*?\n/, '').replace(/```$/, '');
+            } else {
+                // If no fix is available, check if there's a message about it
+                const noFixMatch = section.match(/\*\*No fix available\*\*|\*\*Fix generation failed\*\*/);
+                if (noFixMatch) {
+                    suggestedFix = "No fix available - API credit limit exceeded or fix generation failed";
+                }
+            }
+        } else {
+            // If no code blocks found, try to extract code directly
+            const vulnerableCodeMatch = section.match(/\*\*Vulnerable Code:\*\*\n([\s\S]*?)(?=\*\*Suggested Fix:\*\*|\*\*No fix available\*\*|$)/);
+            if (vulnerableCodeMatch) {
+                vulnerableCode = vulnerableCodeMatch[1].trim();
+            }
+
+            const suggestedFixMatch = section.match(/\*\*Suggested Fix:\*\*\n([\s\S]*?)(?=\*\*|$)/);
+            if (suggestedFixMatch) {
+                suggestedFix = suggestedFixMatch[1].trim();
+            }
+        }
+
+        const severity = title.includes('HIGH') ? 'high' : title.includes('LOW') ? 'low' : 'medium';
+
+        // Create vulnerability card
+        vulnerabilitiesHTML += `
+                <div class="vulnerability-card vulnerability-${severity}">
+                    <div class="vulnerability-card-header">
+                        ${title}
+                    </div>
+                    <div class="vulnerability-card-body">
+                        <div class="vulnerability-meta">
+                            <span><strong>File:</strong> ${cleanFilePath}</span>
+                            <span><strong>Line:</strong> ${line}</span>
+                            <span><strong>Confidence:</strong> ${confidence}</span>
+                        </div>
+                        <div class="code-block">
+                            <div class="code-block-header">Vulnerable Code</div>
+                            <pre><code>${vulnerableCode.trim() || "Code not available"}</code></pre>
+                        </div>
+                    </div>
+                </div>
+            `;
+
+        // Create fix card - only if we have a vulnerable code
+        if (vulnerableCode.trim()) {
+            fixesHTML += `
+                    <div class="vulnerability-card">
+                        <div class="vulnerability-card-header">
+                            Fix for ${title} in ${cleanFilePath}:${line}
+                        </div>
+                        <div class="vulnerability-card-body">
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <div class="code-block">
+                                        <div class="code-block-header">Original Code</div>
+                                        <pre><code>${vulnerableCode.trim()}</code></pre>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="fix-suggestion">
+                                        <h4>Suggested Fix</h4>
+                                        <div class="code-block">
+                                            <pre><code>${suggestedFix.trim() || "**No fix suggestion available**"}</code></pre>
+                                        </div>
+                                        ${!suggestedFix.trim() ? `
+                                        <div class="alert alert-warning mt-2">
+                                            <i class="fas fa-exclamation-triangle"></i>
+                                            Fix generation may have failed due to API credit limits. Try running the scan again with your new API key.
+                                        </div>` : ''}
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                `;
+        }
+    }
+
+    // Check if this is a SAST-only scan
+    const isSastOnlyScan = markdownContent.includes("Running SAST scan...") && !markdownContent.includes("Running Software Composition Analysis (SCA)...");
+
+    // Look for SCA vulnerabilities
+    const scaVulnSections = markdownContent.match(/SCA-[A-Z0-9-]+:[\s\S]*?(?=(?:BANDIT|PYTHON|JAVA|DAST|SCA)-[A-Z0-9-]+:|$)/g) || [];
+
+    // Process SCA vulnerabilities if no SAST vulnerabilities were found AND this is not a SAST-only scan AND not a DAST-only scan
+    if (vulnerabilitiesHTML === '' && scaVulnSections.length > 0 && !isSastOnlyScan && !isDastOnly) {
+        for (const section of scaVulnSections) {
+            // Extract basic information
+            const titleMatch = section.match(/SCA-[A-Z0-9-]+:[^\n]+/);
+            const fileMatch = section.match(/\*\*File\*\*:[\s]*([^\n]+)/);
+            const lineMatch = section.match(/\*\*Line\*\*:[\s]*(\d+)/);
+            const confidenceMatch = section.match(/\*\*Confidence\*\*:[\s]*([^\n]+)/);
+
+            if (!titleMatch || !fileMatch || !lineMatch || !confidenceMatch) continue;
+
+            const title = titleMatch[0];
+            const file = fileMatch[1].trim();
+            const line = lineMatch[1];
+            const confidence = confidenceMatch[1].trim();
+
+            // Extract vulnerable code
+            const vulnerableCodeMatch = section.match(/\*\*Vulnerable Code\*\*\n([\s\S]*?)(?=\*\*|$)/);
+            let vulnerableCode = '';
+            if (vulnerableCodeMatch) {
+                vulnerableCode = vulnerableCodeMatch[1].trim();
+            }
+
+            // Extract suggested fix
+            const suggestedFixMatch = section.match(/\*\*Suggested Fix\*\*\n([\s\S]*?)(?=\*\*|$)/);
+            let suggestedFix = '';
+            if (suggestedFixMatch) {
+                suggestedFix = suggestedFixMatch[1].trim();
+            }
+
+            const severity = title.includes('HIGH') ? 'high' : title.includes('LOW') ? 'low' : 'medium';
+
+            // Create vulnerability card for SCA vulnerability
+            vulnerabilitiesHTML += `
+                    <div class="vulnerability-card vulnerability-${severity}">
+                        <div class="vulnerability-card-header">
+                            ${title}
+                        </div>
+                        <div class="vulnerability-card-body">
+                            <div class="vulnerability-meta">
+                                <span><strong>File:</strong> ${file}</span>
+                                <span><strong>Line:</strong> ${line}</span>
+                                <span><strong>Confidence:</strong> ${confidence}</span>
+                            </div>
+                            <div class="code-block">
+                                <div class="code-block-header">Vulnerable Dependency</div>
+                                <pre><code>${vulnerableCode || "Dependency information not available"}</code></pre>
+                            </div>
+                        </div>
+                    </div>
+                `;
+
+            // Create fix card for SCA vulnerability
+            if (vulnerableCode) {
+                fixesHTML += `
+                        <div class="vulnerability-card">
+                            <div class="vulnerability-card-header">
+                                Fix for ${title} in ${file}
+                            </div>
+                            <div class="vulnerability-card-body">
+                                <div class="row">
+                                    <div class="col-md-6">
+                                        <div class="code-block">
+                                            <div class="code-block-header">Vulnerable Dependency</div>
+                                            <pre><code>${vulnerableCode}</code></pre>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div class="fix-suggestion">
+                                            <h4>Suggested Fix</h4>
+                                            <div class="code-block">
+                                                <pre><code>${suggestedFix || "**Update to the latest secure version**"}</code></pre>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    `;
+            }
+        }
+    }
+
+    // If no vulnerabilities were found, try a different approach
+    if (!vulnerabilitiesHTML) {
+        // Look for specific vulnerability patterns in the raw markdown
+        const vulnMatches = markdownContent.match(/(?:BANDIT|PYTHON|JAVA|DAST)-[A-Z0-9-]+: [^\n]+\n - \*\*File\*\*: `[^`]+`\n - \*\*Line\*\*: \d+\n - \*\*Confidence\*\*: [^\n]+\n\n\*\*Vulnerable Code:\*\*\n```[\s\S]*?```(?:\n\n\*\*Suggested Fix:\*\*\n```[\s\S]*?```)?/g);
+
+        // If we found matches, process them
+        if (vulnMatches) {
+            for (const vulnMatch of vulnMatches) {
+                const titleMatch = vulnMatch.match(/^((?:BANDIT|PYTHON|JAVA|DAST)-[A-Z0-9-]+: [^\n]+)/);
+                const fileMatch = vulnMatch.match(/\*\*File\*\*: `([^`]+)`/);
+                const lineMatch = vulnMatch.match(/\*\*Line\*\*: (\d+)/);
+                const confidenceMatch = vulnMatch.match(/\*\*Confidence\*\*: ([^\n]+)/);
+
+                // Extract code blocks
+                const codeBlocks = vulnMatch.match(/```[\s\S]*?```/g);
+
+                if (titleMatch && fileMatch && lineMatch && confidenceMatch && codeBlocks && codeBlocks.length >= 1) {
+                    const title = titleMatch[1];
+                    const file = fileMatch[1];
+                    const line = lineMatch[1];
+                    const confidence = confidenceMatch[1];
+
+                    // Clean up file path to remove temporary directory prefix
+                    const cleanFilePath = file.replace(/C:\\Users\\azizi\\AppData\\Local\\Temp\\codescan-[a-z0-9_]+\\/, '');
+
+                    // Extract code from code blocks
+                    const vulnerableCode = codeBlocks[0].replace(/```[\s\S]*?\n/, '').replace(/```$/, '').trim();
+                    let suggestedFix = "";
+
+                    if (codeBlocks.length >= 2) {
+                        suggestedFix = codeBlocks[1].replace(/```[\s\S]*?\n/, '').replace(/```$/, '').trim();
+                    } else {
+                        // Check if there's a message about fix generation failure
+                        if (vulnMatch.includes("Fix generation failed") || vulnMatch.includes("No fix available")) {
+                            suggestedFix = "Fix generation failed - API credit limit exceeded";
+                        }
+                    }
+
+                    const severity = title.includes('HIGH') ? 'high' : title.includes('LOW') ? 'low' : 'medium';
+
+                    // Create vulnerability card
+                    vulnerabilitiesHTML += `
+                            <div class="vulnerability-card vulnerability-${severity}">
+                                <div class="vulnerability-card-header">
+                                    ${title}
+                                </div>
+                                <div class="vulnerability-card-body">
+                                    <div class="vulnerability-meta">
+                                        <span><strong>File:</strong> ${cleanFilePath}</span>
+                                        <span><strong>Line:</strong> ${line}</span>
+                                        <span><strong>Confidence:</strong> ${confidence}</span>
+                                    </div>
+                                    <div class="code-block">
+                                        <div class="code-block-header">${title.includes('DAST') ? 'Vulnerable URL/Endpoint' : 'Vulnerable Code'}</div>
+                                        <pre><code>${vulnerableCode}</code></pre>
+                                    </div>
+                                </div>
+                            </div>
+                        `;
+
+                    // Create fix card
+                    fixesHTML += `
+                            <div class="vulnerability-card">
+                                <div class="vulnerability-card-header">
+                                    Fix for ${title} in ${cleanFilePath}:${line}
+                                </div>
+                                <div class="vulnerability-card-body">
+                                    <div class="row">
+                                        <div class="col-md-6">
+                                            <div class="code-block">
+                                                <div class="code-block-header">${title.includes('DAST') ? 'Vulnerable URL/Endpoint' : 'Original Code'}</div>
+                                                <pre><code>${vulnerableCode}</code></pre>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-6">
+                                            <div class="fix-suggestion">
+                                                <h4>Suggested Fix</h4>
+                                                <div class="code-block">
+                                                    <pre><code>${suggestedFix || "**No fix suggestion available**"}</code></pre>
+                                                </div>
+                                                ${!suggestedFix ? `
+                                                <div class="alert alert-warning mt-2">
+                                                    <i class="fas fa-exclamation-triangle"></i>
+                                                    Fix generation may have failed due to API credit limits. Try running the scan again with your new API key.
+                                                </div>` : ''}
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        `;
+                }
+            }
+        }
+    }
+
+    // Define regex patterns for extracting vulnerability information
+    const vulnFixPattern = /([A-Z0-9-]+): ([^\n]+)\nFile:\s*([^\n]+)\nLine:\s*(\d+)\nConfidence:\s*([^\n]+)\nVulnerable Code\s*([\s\S]*?)(?=\n[A-Z0-9-]+:|\n\n\n|$)/g;
+
+    // Try to extract fixes from the PR format
+    if (!vulnerabilitiesHTML || !fixesHTML) {
+        // Look for the PR format pattern
+        const prFixPattern = /Fix for ([^\n]+) in ([^:]+):(\d+)\s*\nOriginal Code\s*\n(?:\d+\s+)?([\s\S]*?)\s*\nSuggested Fix\s*\n(?:\d+\s+)?([\s\S]*?)(?=\nFix for|\n\n|$)/g;
+
+        // Look for the format in the PR description
+        const prDescPattern = /(\d+)\. ([A-Z0-9-]+): ([^\n]+)\nFile: ([^\n]+)\nLine: (\d+)\nConfidence: ([^\n]+)\nVulnerable Code:\n\n([\s\S]*?)\n\nSuggested Fix:\n\n([\s\S]*?)(?=\n\n\d+\.|\n\nMEDIUM|\n\nLOW|\n\n$)/g;
+
+        let prFixMatch;
+
+        // Process PR format matches
+        while ((prFixMatch = prFixPattern.exec(markdownContent)) !== null) {
+            const title = prFixMatch[1];
+            const file = prFixMatch[2];
+            const line = prFixMatch[3];
+            const vulnerableCode = prFixMatch[4].trim();
+            const suggestedFix = prFixMatch[5].trim();
+
+            // Determine severity based on title
+            const severity = title.includes('HIGH') ? 'high' :
+                title.includes('LOW') ? 'low' : 'medium';
+
+            // Create vulnerability card
+            vulnerabilitiesHTML += `
+                    <div class="vulnerability-card vulnerability-${severity}">
+                        <div class="vulnerability-card-header">
+                            ${title}
+                        </div>
+                        <div class="vulnerability-card-body">
+                            <div class="vulnerability-meta">
+                                <span><strong>File:</strong> ${file}</span>
+                                <span><strong>Line:</strong> ${line}</span>
+                                <span><strong>Confidence:</strong> HIGH</span>
+                            </div>
+                            <div class="code-block">
+                                <div class="code-block-header">Vulnerable Code</div>
+                                <pre><code>${vulnerableCode}</code></pre>
+                            </div>
+                        </div>
+                    </div>
+                `;
+
+            // Create fix card
+            fixesHTML += `
+                    <div class="vulnerability-card">
+                        <div class="vulnerability-card-header">
+                            Fix for ${title} in ${file}:${line}
+                        </div>
+                        <div class="vulnerability-card-body">
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <div class="code-block">
+                                        <div class="code-block-header">Original Code</div>
+                                        <pre><code>${vulnerableCode}</code></pre>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="fix-suggestion">
+                                        <h4>Suggested Fix</h4>
+                                        <div class="code-block">
+                                            <pre><code>${suggestedFix}</code></pre>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                `;
+        }
+
+        // Process PR description format matches
+        let prDescMatch;
+        while ((prDescMatch = prDescPattern.exec(markdownContent)) !== null) {
+            const index = prDescMatch[1];
+            const vulnType = prDescMatch[2];
+            const description = prDescMatch[3];
+            const file = prDescMatch[4].replace(/^C:\\Users\\azizi\\AppData\\Local\\Temp\\codescan-[a-z0-9_]+\\/, '');
+            const line = prDescMatch[5];
+            const confidence = prDescMatch[6];
+            const vulnerableCode = prDescMatch[7] ? prDescMatch[7].trim() : '';
+            const suggestedFix = prDescMatch[8] ? prDescMatch[8].trim() : '';
+
+            // Determine severity based on confidence
+            const severity = confidence.includes('HIGH') ? 'high' :
+                confidence.includes('LOW') ? 'low' : 'medium';
+
+            const title = `${vulnType}: ${description}`;
+
+            // Create vulnerability card
+            vulnerabilitiesHTML += `
+                    <div class="vulnerability-card vulnerability-${severity}">
+                        <div class="vulnerability-card-header">
+                            ${title}
+                        </div>
+                        <div class="vulnerability-card-body">
+                            <div class="vulnerability-meta">
+                                <span><strong>File:</strong> ${file}</span>
+                                <span><strong>Line:</strong> ${line}</span>
+                                <span><strong>Confidence:</strong> ${confidence}</span>
+                            </div>
+                            <div class="code-block">
+                                <div class="code-block-header">Vulnerable Code</div>
+                                <pre><code>${vulnerableCode}</code></pre>
+                            </div>
+                        </div>
+                    </div>
+                `;
+
+            // Create fix card
+            fixesHTML += `
+                    <div class="vulnerability-card">
+                        <div class="vulnerability-card-header">
+                            Fix for ${title} in ${file}:${line}
+                        </div>
+                        <div class="vulnerability-card-body">
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <div class="code-block">
+                                        <div class="code-block-header">Original Code</div>
+                                        <pre><code>${vulnerableCode}</code></pre>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="fix-suggestion">
+                                        <h4>Suggested Fix</h4>
+                                        <div class="code-block">
+                                            <pre><code>${suggestedFix || "**No fix suggestion available**"}</code></pre>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                `;
+        }
+    }
+
+    // Process vulnerability details format matches
+    let vulnFixMatch;
+    while ((vulnFixMatch = vulnFixPattern.exec(markdownContent)) !== null) {
+        const vulnType = vulnFixMatch[1];
+        const description = vulnFixMatch[2];
+        const file = vulnFixMatch[3].replace(/^C:\\Users\\azizi\\AppData\\Local\\Temp\\codescan-[a-z0-9_]+\\/, '');
+        const line = vulnFixMatch[4];
+        const confidence = vulnFixMatch[5];
+        const vulnerableCode = vulnFixMatch[6] ? vulnFixMatch[6].trim() : '';
+
+        // Look for a suggested fix for this vulnerability in the PR section
+        const fixPattern = new RegExp(`Fix for ${vulnType}[^\\n]*\\nOriginal Code\\n(?:\\d+\\s+)?([\\s\\S]*?)\\nSuggested Fix\\n(?:\\d+\\s+)?([\\s\\S]*?)(?=\\nFix for|\\n\\n|$)`, 'g');
+        const fixMatch = fixPattern.exec(markdownContent);
+
+        // Also look for fixes in the PR description format
+        const prDescFixPattern = new RegExp(`\\d+\\. ${vulnType}:[^\\n]*\\nFile:[^\\n]*\\nLine: ${line}[^\\n]*\\nConfidence:[^\\n]*\\nVulnerable Code:[\\s\\S]*?Suggested Fix:\\n\\n([\\s\\S]*?)(?=\\n\\n\\d+\\.|\\n\\nMEDIUM|\\n\\nLOW|\\n\\n$)`, 'g');
+        const prDescFixMatch = prDescFixPattern.exec(markdownContent);
+
+        let suggestedFix = '';
+        if (fixMatch && fixMatch.length > 2) {
+            suggestedFix = fixMatch[2].trim();
+        } else if (prDescFixMatch && prDescFixMatch.length > 1) {
+            suggestedFix = prDescFixMatch[1].trim();
+            // Remove any markdown code block markers
+            suggestedFix = suggestedFix.replace(/^```[a-z]*\n/, '').replace(/\n```$/, '');
+        } else {
+            // If no specific fix found, provide a generic suggestion based on vulnerability type
+            if (vulnType.includes('XSS')) {
+                suggestedFix = `// Use a proper HTML encoding library like ESAPI
+import org.owasp.esapi.ESAPI;
+
+// Instead of directly printing user input
+// out.println(userInput);
+
+// Use HTML encoding
+out.println(ESAPI.encoder().encodeForHTML(userInput));`;
+            } else if (vulnType.includes('Command-Injection')) {
+                suggestedFix = `// Use a whitelist approach instead of directly executing user input
+List<String> allowedCommands = Arrays.asList("ls", "dir", "echo");
+if (allowedCommands.contains(userInput)) {
+    ProcessBuilder pb = new ProcessBuilder(userInput);
+    pb.redirectErrorStream(true);
+    Process p = pb.start();
+    // Process the output safely
+}`;
+            } else if (vulnType.includes('BANDIT-B307')) {
+                suggestedFix = `import ast
+
+user_input = input("Enter a math expression: ")
+# Use ast.literal_eval instead of eval for safety
+result = ast.literal_eval(user_input)
+print("Result:", result)`;
+            }
+        }
+
+        // Determine severity based on confidence
+        const severity = confidence.includes('HIGH') ? 'high' :
+            confidence.includes('LOW') ? 'low' : 'medium';
+
+        const title = `${vulnType}: ${description}`;
+
+        // Create vulnerability card if not already created
+        vulnerabilitiesHTML += `
+                    <div class="vulnerability-card vulnerability-${severity}">
+                        <div class="vulnerability-card-header">
+                            ${title}
+                        </div>
+                        <div class="vulnerability-card-body">
+                            <div class="vulnerability-meta">
+                                <span><strong>File:</strong> ${file}</span>
+                                <span><strong>Line:</strong> ${line}</span>
+                                <span><strong>Confidence:</strong> ${confidence}</span>
+                            </div>
+                            <div class="code-block">
+                                <div class="code-block-header">Vulnerable Code</div>
+                                <pre><code>${vulnerableCode}</code></pre>
+                            </div>
+                        </div>
+                    </div>
+                `;
+
+        // Create fix card
+        fixesHTML += `
+                    <div class="vulnerability-card">
+                        <div class="vulnerability-card-header">
+                            Fix for ${title} in ${file}:${line}
+                        </div>
+                        <div class="vulnerability-card-body">
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <div class="code-block">
+                                        <div class="code-block-header">Original Code</div>
+                                        <pre><code>${vulnerableCode}</code></pre>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="fix-suggestion">
+                                        <h4>Suggested Fix</h4>
+                                        <div class="code-block">
+                                            <pre><code>${suggestedFix || "**No fix suggestion available**"}</code></pre>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                `;
+    }
+
+    // If still no vulnerabilities found, try one more approach
+    if (!vulnerabilitiesHTML) {
+        // Extract the SAST scan section
+        const sastScanMatch = markdownContent.match(/## SAST Scan([\s\S]*?)(?:##|$)/);
+        if (sastScanMatch) {
+            const sastScanContent = sastScanMatch[1];
+
+            // Extract all vulnerability sections
+            const vulnSections = sastScanContent.split('---').filter(section =>
+                section.includes('**File**:') &&
+                section.includes('**Line**:') &&
+                section.includes('**Vulnerable Code:**')
+            );
+
+            for (const section of vulnSections) {
+                const titleMatch = section.match(/### \d+\. ([^\n]+)/);
+                const fileMatch = section.match(/\*\*File\*\*: `([^`]+)`/);
+                const lineMatch = section.match(/\*\*Line\*\*: (\d+)/);
+                const confidenceMatch = section.match(/\*\*Confidence\*\*: ([^\n]+)/);
+
+                if (!titleMatch || !fileMatch || !lineMatch || !confidenceMatch) continue;
+
+                // Extract code blocks
+                const vulnerableCodeMatch = section.match(/\*\*Vulnerable Code:\*\*\n```\n([\s\S]*?)\n```/);
+                const suggestedFixMatch = section.match(/\*\*Suggested Fix:\*\*\n```\n([\s\S]*?)\n```/);
+
+                if (!vulnerableCodeMatch || !suggestedFixMatch) continue;
+
+                const title = titleMatch[1];
+                const file = fileMatch[1];
+                const line = lineMatch[1];
+                const confidence = confidenceMatch[1];
+                const vulnerableCode = vulnerableCodeMatch[1];
+                const suggestedFix = suggestedFixMatch[1];
+
+                const severity = title.includes('HIGH') ? 'high' : title.includes('LOW') ? 'low' : 'medium';
+
+                // Create vulnerability card
+                vulnerabilitiesHTML += `
+                        <div class="vulnerability-card vulnerability-${severity}">
+                            <div class="vulnerability-card-header">
+                                ${title}
+                            </div>
+                            <div class="vulnerability-card-body">
+                                <div class="vulnerability-meta">
+                                    <span><strong>File:</strong> ${file}</span>
+                                    <span><strong>Line:</strong> ${line}</span>
+                                    <span><strong>Confidence:</strong> ${confidence}</span>
+                                </div>
+                                <div class="code-block">
+                                    <div class="code-block-header">Vulnerable Code</div>
+                                    <pre><code>${vulnerableCode}</code></pre>
+                                </div>
+                            </div>
+                        </div>
+                    `;
+
+                // Create fix card
+                fixesHTML += `
+                        <div class="vulnerability-card">
+                            <div class="vulnerability-card-header">
+                                Fix for ${title} in ${file}:${line}
+                            </div>
+                            <div class="vulnerability-card-body">
+                                <div class="row">
+                                    <div class="col-md-6">
+                                        <div class="code-block">
+                                            <div class="code-block-header">Original Code</div>
+                                            <pre><code>${vulnerableCode}</code></pre>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div class="fix-suggestion">
+                                            <h4>Suggested Fix</h4>
+                                            <div class="code-block">
+                                                <pre><code>${suggestedFix || "**No fix suggestion available**"}</code></pre>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    `;
+            }
+        }
+    }
+
+    // Update the vulnerabilities container
+    const vulnerabilitiesContainer = document.getElementById('vulnerabilities-container');
+    if (vulnerabilitiesHTML) {
+        vulnerabilitiesContainer.innerHTML = vulnerabilitiesHTML;
+    } else {
+        vulnerabilitiesContainer.innerHTML = '<div class="alert alert-info">No vulnerabilities detected.</div>';
+    }
+
+    // Update the fixes container
+    const fixesContainer = document.getElementById('fixes-container');
+    if (fixesHTML) {
+        fixesContainer.innerHTML = fixesHTML;
+    } else {
+        fixesContainer.innerHTML = '<div class="alert alert-info">No fixes generated.</div>';
+    }
+
+    // Extract and display metrics
+    const metricsRegex = /# Security Metrics Dashboard([\s\S]*?)(?:##|$)/;
+    const metricsMatch = markdownContent.match(metricsRegex);
+
+    if (metricsMatch) {
+        const metricsContent = metricsMatch[1];
+        const metricsHTML = `
+                <div class="metrics-container">
+                    <div class="metric-card">
+                        <div class="metric-value">${totalMatch ? totalMatch[1] : '0'}</div>
+                        <div class="metric-label">Total Vulnerabilities</div>
+                    </div>
+                    <div class="metric-card">
+                        <div class="metric-value">${successfulFixesMatch ? successfulFixesMatch[1] : '0'}</div>
+                        <div class="metric-label">Fixed Vulnerabilities</div>
+                    </div>
+                    <div class="metric-card">
+                        <div class="metric-value">${fixRateMatch ? fixRateMatch[1] + '%' : '0%'}</div>
+                        <div class="metric-label">Fix Success Rate</div>
+                    </div>
+                </div>
+
+                <h3>Vulnerability Severity</h3>
+                <div class="progress">
+                    <div class="progress-bar progress-bar-danger" role="progressbar" style="width: ${highMatch && totalMatch ? (highMatch[1] / totalMatch[1] * 100) : 0}%" aria-valuenow="${highMatch ? highMatch[1] : 0}" aria-valuemin="0" aria-valuemax="100">High</div>
+                    <div class="progress-bar progress-bar-warning" role="progressbar" style="width: ${mediumMatch && totalMatch ? (mediumMatch[1] / totalMatch[1] * 100) : 0}%" aria-valuenow="${mediumMatch ? mediumMatch[1] : 0}" aria-valuemin="0" aria-valuemax="100">Medium</div>
+                    <div class="progress-bar progress-bar-success" role="progressbar" style="width: ${lowMatch && totalMatch ? (lowMatch[1] / totalMatch[1] * 100) : 0}%" aria-valuenow="${lowMatch ? lowMatch[1] : 0}" aria-valuemin="0" aria-valuemax="100">Low</div>
+                </div>
+
+                <div class="severity-distribution mt-3 mb-4">
+                    <div class="severity-item">
+                        <div class="severity-count severity-high">${highMatch ? highMatch[1] : '0'}</div>
+                        <div class="severity-label">High</div>
+                    </div>
+                    <div class="severity-item">
+                        <div class="severity-count severity-medium">${mediumMatch ? mediumMatch[1] : '0'}</div>
+                        <div class="severity-label">Medium</div>
+                    </div>
+                    <div class="severity-item">
+                        <div class="severity-count severity-low">${lowMatch ? lowMatch[1] : '0'}</div>
+                        <div class="severity-label">Low</div>
+                    </div>
+                </div>
+
+                <h3>Fix Success Rate</h3>
+                <div class="progress mb-3">
+                    <div class="progress-bar progress-bar-success" role="progressbar" style="width: ${fixRateMatch ? fixRateMatch[1] : 0}%" aria-valuenow="${fixRateMatch ? fixRateMatch[1] : 0}" aria-valuemin="0" aria-valuemax="100">${fixRateMatch ? fixRateMatch[1] + '%' : '0%'}</div>
+                </div>
+
+                <div class="row mt-4">
+                    <div class="col-md-6">
+                        <div class="card">
+                            <div class="card-header">Fix Attempts</div>
+                            <div class="card-body">
+                                <p><strong>Total Fixes Attempted:</strong> ${fixesAttemptedMatch ? fixesAttemptedMatch[1] : '0'}</p>
+                                <p><strong>Successful Fixes:</strong> ${successfulFixesMatch ? successfulFixesMatch[1] : '0'}</p>
+                                <p><strong>Fix Success Rate:</strong> ${fixRateMatch ? fixRateMatch[1] + '%' : '0%'}</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="card">
+                            <div class="card-header">Scan Statistics</div>
+                            <div class="card-body">
+                                <p><strong>Total Vulnerabilities:</strong> ${totalMatch ? totalMatch[1] : '0'}</p>
+                                <p><strong>High Severity:</strong> ${highMatch ? highMatch[1] : '0'}</p>
+                                <p><strong>Medium Severity:</strong> ${mediumMatch ? mediumMatch[1] : '0'}</p>
+                                <p><strong>Low Severity:</strong> ${lowMatch ? lowMatch[1] : '0'}</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Pull Request Status -->
+                <div class="pull-request-status">
+                    <h3>Pull Request Status</h3>
+                    <div class="card shadow">
+                        <div class="card-header bg-primary text-white">
+                            <i class="fas fa-code-branch mr-2"></i> GitHub Pull Request
+                        </div>
+                        <div class="card-body">
+                            ${markdownContent.includes('No vulnerabilities with fixes found') ?
+                `<div class="alert alert-info">
+                                    <i class="fas fa-info-circle mr-2"></i>
+                                    <strong>No Vulnerabilities to Fix</strong><br>
+                                    No vulnerabilities with fixes were found in the scan results. A pull request cannot be created.
+                                </div>
+                                <div class="mt-4">
+                                    <a href="/scan" class="btn btn-primary">
+                                        <i class="fas fa-search mr-2"></i> Run Another Scan
+                                    </a>
+                                </div>` :
+                markdownContent.includes('Could not extract vulnerability information') ?
+                    `<div class="alert alert-warning">
+                                    <i class="fas fa-exclamation-triangle mr-2"></i>
+                                    <strong>Vulnerability Extraction Failed</strong><br>
+                                    ${markdownContent.match(/Could not extract vulnerability information[^\n]*/i) ? markdownContent.match(/Could not extract vulnerability information[^\n]*/i)[0] : 'Could not extract vulnerability information from the scan results.'}
+                                </div>
+                                <div class="alert alert-info">
+                                    <i class="fas fa-info-circle mr-2"></i>
+                                    <strong>Troubleshooting Tips:</strong>
+                                    <ul class="mt-2 mb-0">
+                                        <li>Make sure the scan completed successfully</li>
+                                        <li>Check that vulnerabilities were found and fixes were generated</li>
+                                        <li>Try running the scan again with different options</li>
+                                        <li>Ensure the repository contains code that can be scanned for vulnerabilities</li>
+                                    </ul>
+                                </div>
+                                <div class="mt-4">
+                                    <a href="/scan" class="btn btn-primary">
+                                        <i class="fas fa-search mr-2"></i> Run Another Scan
+                                    </a>
+                                </div>` :
+                    markdownContent.includes('Failed to create PR') || markdownContent.includes('Failed to push changes') ?
+                        `<div class="alert alert-warning">
+                                    <i class="fas fa-exclamation-triangle mr-2"></i>
+                                    <strong>Pull Request Creation Failed</strong><br>
+                                    ${markdownContent.match(/Failed to create PR: ([^\n]+)/i) ? markdownContent.match(/Failed to create PR: ([^\n]+)/i)[1] :
+                            markdownContent.match(/Failed to push changes/i) ? 'Failed to push changes to GitHub. This could be due to authentication issues or repository permissions.' :
+                                'Error creating pull request'}
+                                </div>
+                                <div class="alert alert-info">
+                                    <i class="fas fa-info-circle mr-2"></i>
+                                    <strong>Troubleshooting Tips:</strong>
+                                    <ul class="mt-2 mb-0">
+                                        <li>Ensure your GitHub token has the <code>repo</code> scope</li>
+                                        <li>Verify you have write access to the repository</li>
+                                        <li>Check that the repository name is in the format <code>owner/repo</code></li>
+                                        <li>Try using a personal access token with classic permissions</li>
+                                    </ul>
+                                </div>
+                                <div class="mt-4">
+                                    <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#createPrModal">
+                                        <i class="fas fa-code-branch mr-2"></i> Try Again with Different Token
+                                    </button>
+                                </div>` :
+                        markdownContent.includes('PR created successfully') ?
+                            `<div class="alert alert-success">
+                                    <i class="fas fa-check-circle mr-2"></i>
+                                    <strong>Pull Request Created Successfully</strong><br>
+                                    ${markdownContent.match(/PR created successfully: ([^\n]+)/i) ?
+                                `<a href="${markdownContent.match(/PR created successfully: ([^\n]+)/i)[1]}" target="_blank" class="alert-link">
+                                            ${markdownContent.match(/PR created successfully: ([^\n]+)/i)[1]}
+                                        </a>` :
+                                'Pull request created'}
+                                </div>
+                                <div class="mt-4">
+                                    <button type="button" class="btn btn-success" data-bs-toggle="modal" data-bs-target="#mergePrModal">
+                                        <i class="fas fa-check mr-2"></i> Merge Pull Request
+                                    </button>
+                                </div>` :
+                            `<div class="alert alert-info">
+                                    <i class="fas fa-info-circle mr-2"></i>
+                                    No pull request was created for this scan.
+                                </div>
+                                <div class="mt-4">
+                                    <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#createPrModal">
+                                        <i class="fas fa-code-branch mr-2"></i> Create Pull Request
+                                    </button>
+                                </div>`
+            }
+                        </div>
+                    </div>
+                </div>
+            </div>
+            `;
+
+        document.getElementById('metrics-container').innerHTML = metricsHTML;
+    } else {
+        document.getElementById('metrics-container').innerHTML = '<div class="alert alert-info">No metrics available.</div>';
+    }
+    });
+</script>
+<!-- Create PR Modal -->
+<div class="modal fade" id="createPrModal" tabindex="-1" aria-labelledby="createPrModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header bg-primary text-white">
+                <h5 class="modal-title" id="createPrModalLabel"><i class="fas fa-code-branch mr-2"></i> Create Pull
+                    Request</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form id="createPrForm" action="/create_pr" method="post">
+                    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+
+                    <div class="mb-3">
+                        <label for="create_pr_github_token" class="form-label">GitHub Token</label>
+                        <div class="input-group">
+                            <span class="input-group-text"><i class="fas fa-key"></i></span>
+                            <input type="password" class="form-control" id="create_pr_github_token" name="github_token"
+                                required>
+                        </div>
+                        <div class="form-text">Your GitHub personal access token with repo scope.</div>
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="repo_name" class="form-label">Repository Name</label>
+                        <div class="input-group">
+                            <span class="input-group-text"><i class="fab fa-github"></i></span>
+                            <input type="text" class="form-control" id="repo_name" name="repo_name"
+                                placeholder="owner/repo" required>
+                        </div>
+                        <div class="form-text">The repository name in format owner/repo.</div>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                <button type="submit" form="createPrForm" class="btn btn-primary">
+                    <i class="fas fa-code-branch mr-2"></i> Create Pull Request
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Merge PR Modal -->
+<div class="modal fade" id="mergePrModal" tabindex="-1" aria-labelledby="mergePrModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header bg-success text-white">
+                <h5 class="modal-title" id="mergePrModalLabel"><i class="fas fa-check mr-2"></i> Merge Pull Request</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <p>Are you sure you want to merge this pull request?</p>
+                <p>This will apply the security fixes to your repository.</p>
+
+                <form id="mergePrForm" action="/merge_pr" method="post">
+                    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+
+                    <div class="mb-3">
+                        <label for="merge_github_token" class="form-label">GitHub Token</label>
+                        <div class="input-group">
+                            <span class="input-group-text"><i class="fas fa-key"></i></span>
+                            <input type="password" class="form-control" id="merge_github_token" name="github_token"
+                                required>
+                        </div>
+                        <div class="form-text">Your GitHub personal access token with repo scope.</div>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                <button type="submit" form="mergePrForm" class="btn btn-success">
+                    <i class="fas fa-check mr-2"></i> Confirm Merge
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% endblock %}

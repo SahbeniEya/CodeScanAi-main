@@ -1,0 +1,278 @@
+{% extends 'base.html' %}
+
+{% block title %}CodeScanAI - Dashboard{% endblock %}
+
+{% block content %}
+<div class="jumbotron">
+    <h1><i class="fas fa-chart-line mr-3"></i>Security Metrics Dashboard</h1>
+    <p class="lead">Comprehensive overview of your project's security health and vulnerability metrics.</p>
+</div>
+
+<div class="metrics-container mb-5">
+    <div class="metric-card shadow">
+        <div class="icon">
+            <i class="fas fa-exclamation-triangle text-danger"></i>
+        </div>
+        <div class="metric-value">{{ metrics.vulnerabilities.by_severity.HIGH }}</div>
+        <div class="metric-label">High Severity</div>
+    </div>
+
+    <div class="metric-card shadow">
+        <div class="icon">
+            <i class="fas fa-exclamation-circle text-warning"></i>
+        </div>
+        <div class="metric-value">{{ metrics.vulnerabilities.by_severity.MEDIUM }}</div>
+        <div class="metric-label">Medium Severity</div>
+    </div>
+
+    <div class="metric-card shadow">
+        <div class="icon">
+            <i class="fas fa-info-circle text-info"></i>
+        </div>
+        <div class="metric-value">{{ metrics.vulnerabilities.by_severity.LOW }}</div>
+        <div class="metric-label">Low Severity</div>
+    </div>
+
+    <div class="metric-card shadow">
+        <div class="icon">
+            <i class="fas fa-shield-alt text-primary"></i>
+        </div>
+        <div class="metric-value">{{ metrics.vulnerabilities.total }}</div>
+        <div class="metric-label">Total Vulnerabilities</div>
+    </div>
+</div>
+
+<div class="row mb-5">
+    <div class="col-md-6">
+        <div class="card shadow">
+            <div class="card-header bg-primary text-white">
+                <h5 class="card-title mb-0"><i class="fas fa-chart-pie mr-2"></i>Vulnerabilities by Severity</h5>
+            </div>
+            <div class="card-body">
+                <canvas id="severityChart" height="250"></canvas>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-6">
+        <div class="card shadow">
+            <div class="card-header bg-secondary text-white">
+                <h5 class="card-title mb-0"><i class="fas fa-chart-bar mr-2"></i>Vulnerabilities by Type</h5>
+            </div>
+            <div class="card-body">
+                <canvas id="typeChart" height="250"></canvas>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row mb-5">
+    <div class="col-md-6">
+        <div class="card shadow">
+            <div class="card-header bg-info text-white">
+                <h5 class="card-title mb-0"><i class="fas fa-code mr-2"></i>Vulnerabilities by Language</h5>
+            </div>
+            <div class="card-body">
+                <canvas id="languageChart" height="250"></canvas>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-6">
+        <div class="card shadow">
+            <div class="card-header bg-success text-white">
+                <h5 class="card-title mb-0"><i class="fas fa-wrench mr-2"></i>Fix Metrics</h5>
+            </div>
+            <div class="card-body">
+                <div class="metrics-container mb-4">
+                    <div class="metric-card shadow-sm">
+                        <div class="icon">
+                            <i class="fas fa-tasks text-secondary"></i>
+                        </div>
+                        <div class="metric-value">{{ metrics.fixes.total }}</div>
+                        <div class="metric-label">Total Fixes Attempted</div>
+                    </div>
+                    <div class="metric-card shadow-sm">
+                        <div class="icon">
+                            <i class="fas fa-check-circle text-success"></i>
+                        </div>
+                        <div class="metric-value">{{ metrics.fixes.successful }}</div>
+                        <div class="metric-label">Successful Fixes</div>
+                    </div>
+                    <div class="metric-card shadow-sm">
+                        <div class="icon">
+                            <i class="fas fa-percentage text-primary"></i>
+                        </div>
+                        <div class="metric-value">{{ (metrics.fixes.success_rate * 100) | round(1) }}%</div>
+                        <div class="metric-label">Fix Success Rate</div>
+                    </div>
+                </div>
+                <div class="mt-4">
+                    <canvas id="fixChart" height="200"></canvas>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row mb-5">
+    <div class="col-md-12">
+        <div class="card shadow">
+            <div class="card-header bg-dark text-white">
+                <h5 class="card-title mb-0"><i class="fas fa-code-branch mr-2"></i>Pull Request Metrics</h5>
+            </div>
+            <div class="card-body">
+                <div class="metrics-container mb-4">
+                    <div class="metric-card shadow-sm">
+                        <div class="icon">
+                            <i class="fas fa-code-branch text-dark"></i>
+                        </div>
+                        <div class="metric-value">{{ metrics.prs.total }}</div>
+                        <div class="metric-label">Total PRs</div>
+                    </div>
+                    <div class="metric-card shadow-sm">
+                        <div class="icon">
+                            <i class="fas fa-check text-success"></i>
+                        </div>
+                        <div class="metric-value">{{ metrics.prs.merged }}</div>
+                        <div class="metric-label">Merged PRs</div>
+                    </div>
+                    <div class="metric-card shadow-sm">
+                        <div class="icon">
+                            <i class="fas fa-percentage text-info"></i>
+                        </div>
+                        <div class="metric-value">{{ (metrics.prs.merge_rate * 100) | round(1) }}%</div>
+                        <div class="metric-label">PR Merge Rate</div>
+                    </div>
+                </div>
+                <div class="mt-4">
+                    <h5 class="mb-3">Merge Success Rate</h5>
+                    <div class="progress" style="height: 25px;">
+                        <div class="progress-bar bg-success" role="progressbar"
+                            style="width: {{ (metrics.prs.merge_rate * 100) | round(1) }}%;"
+                            aria-valuenow="{{ (metrics.prs.merge_rate * 100) | round(1) }}" aria-valuemin="0"
+                            aria-valuemax="100">
+                            {{ (metrics.prs.merge_rate * 100) | round(1) }}%
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="mt-5 mb-5 text-center">
+    <h3 class="mb-4">Ready to improve your code security?</h3>
+    <div class="d-flex justify-content-center gap-3">
+        <a href="{{ url_for('scan') }}" class="btn btn-primary btn-lg">
+            <i class="fas fa-search mr-2"></i>Run a New Scan
+        </a>
+        <a href="{{ url_for('results') }}" class="btn btn-secondary btn-lg">
+            <i class="fas fa-file-alt mr-2"></i>View Latest Results
+        </a>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+    // Severity chart
+    var severityCtx = document.getElementById('severityChart').getContext('2d');
+    var severityChart = new Chart(severityCtx, {
+        type: 'pie',
+        data: {
+            labels: ['High', 'Medium', 'Low'],
+            datasets: [{
+                data: [
+                    {{ metrics.vulnerabilities.by_severity.HIGH }},
+            {{ metrics.vulnerabilities.by_severity.MEDIUM }},
+                    {{ metrics.vulnerabilities.by_severity.LOW }}
+                ],
+    backgroundColor: ['#e74c3c', '#f39c12', '#3498db']
+            }]
+        },
+    options: {
+        responsive: true,
+            plugins: {
+            legend: {
+                position: 'right'
+            }
+        }
+    }
+    });
+
+    // Type chart
+    var typeCtx = document.getElementById('typeChart').getContext('2d');
+    var typeChart = new Chart(typeCtx, {
+        type: 'bar',
+        data: {
+            labels: ['SQL Injection', 'XSS', 'CSRF', 'Path Traversal', 'Command Injection'],
+            datasets: [{
+                label: 'Count',
+                data: [12, 8, 5, 7, 3],
+                backgroundColor: '#2c3e50'
+            }]
+        },
+        options: {
+            responsive: true,
+            scales: {
+                y: {
+                    beginAtZero: true,
+                    ticks: {
+                        precision: 0
+                    }
+                }
+            }
+        }
+    });
+
+    // Language chart
+    var languageCtx = document.getElementById('languageChart').getContext('2d');
+    var languageChart = new Chart(languageCtx, {
+        type: 'doughnut',
+        data: {
+            labels: ['JavaScript', 'Python', 'Java', 'PHP', 'Ruby', 'Go'],
+            datasets: [{
+                data: [15, 10, 8, 5, 3, 2],
+                backgroundColor: ['#3498db', '#2ecc71', '#e67e22', '#9b59b6', '#1abc9c', '#e84393']
+            }]
+        },
+        options: {
+            responsive: true,
+            plugins: {
+                legend: {
+                    position: 'right'
+                }
+            }
+        }
+    });
+
+    // Fix chart
+    var fixCtx = document.getElementById('fixChart').getContext('2d');
+    var fixChart = new Chart(fixCtx, {
+        type: 'bar',
+        data: {
+            labels: ['Attempted', 'Successful', 'Failed'],
+            datasets: [{
+                label: 'Fixes',
+                data: [
+                    {{ metrics.fixes.total }},
+            {{ metrics.fixes.successful }},
+                    {{ metrics.fixes.total - metrics.fixes.successful }}
+                ],
+    backgroundColor: ['#7f8c8d', '#2ecc71', '#e74c3c']
+            }]
+        },
+    options: {
+        responsive: true,
+            scales: {
+            y: {
+                beginAtZero: true,
+                    ticks: {
+                    precision: 0
+                }
+            }
+        }
+    }
+    });
+</script>
+{% endblock %}

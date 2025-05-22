@@ -1,0 +1,255 @@
+/* CodeScanAI Custom Styles */
+
+/* General Styles */
+body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    line-height: 1.6;
+}
+
+/* Results Page Styles */
+.results-container {
+    max-width: 1200px;
+    margin: 0 auto;
+}
+
+.results-header {
+    margin-bottom: 2rem;
+    padding-bottom: 1rem;
+    border-bottom: 1px solid #e9ecef;
+}
+
+.results-section {
+    margin-bottom: 2.5rem;
+    padding: 1.5rem;
+    border-radius: 8px;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+    background-color: #fff;
+}
+
+.results-section h2 {
+    color: #2c3e50;
+    font-weight: 600;
+    margin-bottom: 1.5rem;
+    padding-bottom: 0.5rem;
+    border-bottom: 2px solid #3498db;
+}
+
+/* Vulnerability Cards */
+.vulnerability-card {
+    margin-bottom: 1.5rem;
+    border-radius: 6px;
+    overflow: hidden;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.12);
+}
+
+.vulnerability-card-header {
+    padding: 1rem;
+    font-weight: 600;
+    color: #fff;
+}
+
+.vulnerability-high .vulnerability-card-header {
+    background-color: #e74c3c;
+}
+
+.vulnerability-medium .vulnerability-card-header {
+    background-color: #f39c12;
+}
+
+.vulnerability-low .vulnerability-card-header {
+    background-color: #3498db;
+}
+
+.vulnerability-card-body {
+    padding: 1.5rem;
+    background-color: #f8f9fa;
+}
+
+.vulnerability-meta {
+    margin-bottom: 1rem;
+    font-size: 0.9rem;
+    color: #7f8c8d;
+}
+
+.vulnerability-meta span {
+    margin-right: 1rem;
+}
+
+/* Code Blocks */
+.code-block {
+    position: relative;
+    margin: 1rem 0;
+    border-radius: 6px;
+    overflow: hidden;
+}
+
+.code-block-header {
+    padding: 0.5rem 1rem;
+    background-color: #2c3e50;
+    color: #ecf0f1;
+    font-family: monospace;
+    font-size: 0.9rem;
+}
+
+.code-block pre {
+    margin: 0;
+    padding: 1rem;
+    background-color: #282c34;
+    color: #f8f9fa;
+    border-radius: 0 0 6px 6px;
+    overflow-x: auto;
+    font-family: 'Courier New', Courier, monospace;
+}
+
+.code-block code {
+    font-family: 'Courier New', Courier, monospace;
+}
+
+/* Fix Suggestion */
+.fix-suggestion {
+    padding: 0;
+    border-radius: 4px;
+}
+
+.fix-suggestion h4 {
+    color: #2980b9;
+    margin-bottom: 0.5rem;
+    padding: 0.5rem 1rem;
+    background-color: #e8f4fc;
+    border-left: 4px solid #3498db;
+}
+
+/* Side-by-side comparison */
+.vulnerability-card .row {
+    margin: 0;
+}
+
+.vulnerability-card .col-md-6 {
+    padding: 0.5rem;
+}
+
+/* Metrics Dashboard */
+.metrics-container {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1.5rem;
+    margin-bottom: 1.5rem;
+}
+
+.metric-card {
+    flex: 1;
+    min-width: 200px;
+    padding: 1.5rem;
+    border-radius: 8px;
+    background-color: #fff;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+    text-align: center;
+}
+
+.metric-value {
+    font-size: 2.5rem;
+    font-weight: 700;
+    color: #2c3e50;
+    margin-bottom: 0.5rem;
+}
+
+.metric-label {
+    font-size: 1rem;
+    color: #7f8c8d;
+}
+
+.severity-distribution {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 1rem;
+}
+
+.severity-item {
+    text-align: center;
+    flex: 1;
+}
+
+.severity-count {
+    font-size: 1.5rem;
+    font-weight: 600;
+}
+
+.severity-high {
+    color: #e74c3c;
+}
+
+.severity-medium {
+    color: #f39c12;
+}
+
+.severity-low {
+    color: #3498db;
+}
+
+/* Tabs for different sections */
+.results-tabs {
+    margin-bottom: 2rem;
+}
+
+.results-tabs .nav-link {
+    color: #7f8c8d;
+    font-weight: 500;
+}
+
+.results-tabs .nav-link.active {
+    color: #2c3e50;
+    font-weight: 600;
+    border-bottom: 3px solid #3498db;
+}
+
+/* Progress bars */
+.progress {
+    height: 10px;
+    margin-bottom: 1rem;
+    border-radius: 5px;
+}
+
+.progress-bar-success {
+    background-color: #2ecc71;
+}
+
+.progress-bar-warning {
+    background-color: #f39c12;
+}
+
+.progress-bar-danger {
+    background-color: #e74c3c;
+}
+
+/* Pull Request Status */
+.pull-request-status {
+    margin-top: 2rem;
+}
+
+.pull-request-status .card {
+    border: none;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+}
+
+.pull-request-status .card-header {
+    background-color: #2c3e50;
+    color: #fff;
+    font-weight: 600;
+}
+
+.pull-request-status .alert {
+    margin-bottom: 0;
+    border-radius: 0;
+}
+
+.pull-request-status .alert-success {
+    border-left: 4px solid #2ecc71;
+}
+
+.pull-request-status .alert-warning {
+    border-left: 4px solid #f39c12;
+}
+
+.pull-request-status .alert-info {
+    border-left: 4px solid #3498db;
+}

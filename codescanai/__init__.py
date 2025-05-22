@@ -1,0 +1,3 @@
+"""
+CodeScanAI package.
+"""

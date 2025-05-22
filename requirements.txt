@@ -1,0 +1,25 @@
+# Original dependencies
+openai==1.70.0
+PyGithub==2.6.1
+google-generativeai==0.8.4
+ipython==8.27.0
+huggingface_hub[inference]==0.30.2
+bandit==1.7.5
+colorama==0.4.6
+tabulate==0.9.0
+bootstrap-flask==2.3.3
+tenacity==8.2.3
+eslint==0.0.1
+pandas==2.0.3
+matplotlib==3.7.2
+seaborn==0.12.2
+
+# Known vulnerable dependencies for testing
+requests==2.18.0  # CVE-2018-18074
+flask==0.12.2  # CVE-2018-1000656
+django==1.11.0  # CVE-2017-7233
+cryptography==2.1.4  # CVE-2018-10903
+pillow==4.3.0  # CVE-2018-5247
+numpy==1.14.0  # CVE-2019-6446
+jinja2==2.10  # CVE-2019-10906
+markupsafe==0.23  # CVE-2019-19844

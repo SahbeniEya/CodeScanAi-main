@@ -1,0 +1,5 @@
+        // Check if this is a DAST-only scan
+        const isDastOnly = {% if is_dast_only %}true{% else %}false{% endif %};
+        const scanType = "{{ scan_type if scan_type else 'all' }}";
+        console.log("Scan type:", scanType);
+        console.log("Is DAST only:", isDastOnly);

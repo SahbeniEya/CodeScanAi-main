@@ -1,0 +1,235 @@
+{% extends 'base.html' %}
+
+{% block title %}CodeScanAI - Advanced Security Analysis{% endblock %}
+
+{% block content %}
+<div class="jumbotron">
+    <div class="position-relative">
+        <h1 class="display-4 mb-4">
+            <span class="text-primary">Code</span>Scan<span class="text-primary">AI</span>
+            <span class="badge bg-danger ms-2 animate__animated animate__fadeIn">BETA</span>
+        </h1>
+        <div class="position-absolute top-0 end-0 d-none d-md-block">
+            <div class="security-badge">
+                <i class="fas fa-shield-alt"></i> SAST
+            </div>
+            <div class="security-badge">
+                <i class="fas fa-box"></i> SCA
+            </div>
+            <div class="security-badge">
+                <i class="fas fa-globe"></i> DAST
+            </div>
+        </div>
+    </div>
+    <p class="lead">
+        Next-generation security analysis platform powered by advanced AI models. Detect vulnerabilities,
+        generate fixes, validate solutions, and secure your codebase - all with minimal human intervention.
+    </p>
+    <div class="d-flex flex-wrap gap-3 mt-4">
+        <a class="btn btn-primary btn-lg" href="{{ url_for('scan') }}" role="button">
+            <i class="fas fa-search me-2"></i> Scan Code
+        </a>
+        <a class="btn btn-secondary btn-lg" href="{{ url_for('github') }}" role="button">
+            <i class="fab fa-github me-2"></i> Connect to GitHub
+        </a>
+    </div>
+</div>
+
+<div class="row mt-5 mb-4">
+    <div class="col-md-6">
+        <h2 class="mb-4">Advanced Security Features</h2>
+        <div class="terminal mb-4">
+            <div class="terminal-content">
+                <div class="terminal-prompt">Initializing security scan...</div>
+                <div>Analyzing code patterns...</div>
+                <div>Detecting vulnerabilities...</div>
+                <div>Generating AI-powered fixes...</div>
+                <div>Validating solutions...</div>
+                <div class="text-success">Scan complete! Your code is now secure.</div>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-6">
+        <div class="metrics-container">
+            <div class="metric-card">
+                <div class="icon mb-3">
+                    <i class="fas fa-shield-alt"></i>
+                </div>
+                <div class="metric-value">98%</div>
+                <div class="metric-label">Detection Rate</div>
+            </div>
+            <div class="metric-card">
+                <div class="icon mb-3">
+                    <i class="fas fa-robot"></i>
+                </div>
+                <div class="metric-value">95%</div>
+                <div class="metric-label">Fix Accuracy</div>
+            </div>
+            <div class="metric-card">
+                <div class="icon mb-3">
+                    <i class="fas fa-tachometer-alt"></i>
+                </div>
+                <div class="metric-value">3x</div>
+                <div class="metric-label">Faster Than Manual</div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<h2 class="mt-5 mb-4">Key Security Features</h2>
+
+<div class="row">
+    <div class="col-md-4 mb-4">
+        <div class="card h-100">
+            <div class="card-body feature-card">
+                <div class="icon">
+                    <i class="fas fa-shield-alt"></i>
+                </div>
+                <h3>Multi-Scanner Integration</h3>
+                <p>Combines SAST, SCA, and DAST scanning to provide comprehensive security analysis across your entire
+                    application stack.</p>
+                <div class="mt-3">
+                    <span class="badge bg-primary">SAST</span>
+                    <span class="badge bg-success">SCA</span>
+                    <span class="badge bg-info">DAST</span>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-4 mb-4">
+        <div class="card h-100">
+            <div class="card-body feature-card">
+                <div class="icon">
+                    <i class="fas fa-robot"></i>
+                </div>
+                <h3>AI-Powered Fix Generation</h3>
+                <p>Leverages state-of-the-art AI models to automatically generate secure code fixes for detected
+                    vulnerabilities.</p>
+                <div class="mt-3">
+                    <span class="badge bg-primary">HuggingFace</span>
+                    <span class="badge bg-success">OpenAI</span>
+                    <span class="badge bg-info">Gemini</span>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-4 mb-4">
+        <div class="card h-100">
+            <div class="card-body feature-card">
+                <div class="icon">
+                    <i class="fas fa-check-circle"></i>
+                </div>
+                <h3>Intelligent Validation</h3>
+                <p>Automatically validates generated fixes through multiple methods to ensure vulnerabilities are
+                    properly resolved.</p>
+                <div class="mt-3">
+                    <span class="badge bg-primary">Static Analysis</span>
+                    <span class="badge bg-success">Test Cases</span>
+                    <span class="badge bg-info">Re-scanning</span>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-md-4 mb-4">
+        <div class="card h-100">
+            <div class="card-body feature-card">
+                <div class="icon">
+                    <i class="fas fa-code-branch"></i>
+                </div>
+                <h3>Automated PR Creation</h3>
+                <p>Streamlines the remediation process by automatically creating pull requests with security fixes.</p>
+                <div class="mt-3">
+                    <span class="badge bg-primary">GitHub</span>
+                    <span class="badge bg-success">GitLab</span>
+                    <span class="badge bg-info">Bitbucket</span>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-4 mb-4">
+        <div class="card h-100">
+            <div class="card-body feature-card">
+                <div class="icon">
+                    <i class="fas fa-chart-line"></i>
+                </div>
+                <h3>Security Metrics Dashboard</h3>
+                <p>Provides comprehensive security metrics and visualizations to track your security posture over time.
+                </p>
+                <div class="mt-3">
+                    <span class="badge bg-primary">Trends</span>
+                    <span class="badge bg-success">Risk Scores</span>
+                    <span class="badge bg-info">Compliance</span>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-4 mb-4">
+        <div class="card h-100">
+            <div class="card-body feature-card">
+                <div class="icon">
+                    <i class="fas fa-cogs"></i>
+                </div>
+                <h3>CI/CD Integration</h3>
+                <p>Seamlessly integrates into your CI/CD pipeline for continuous security monitoring and remediation.
+                </p>
+                <div class="mt-3">
+                    <span class="badge bg-primary">GitHub Actions</span>
+                    <span class="badge bg-success">Jenkins</span>
+                    <span class="badge bg-info">GitLab CI</span>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="mt-5 mb-5 text-center">
+    <h2 class="mb-4">Ready to secure your code?</h2>
+    <a class="btn btn-primary btn-lg" href="{{ url_for('scan') }}" role="button">
+        <i class="fas fa-rocket me-2"></i> Get Started Now
+    </a>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css" />
+<script>
+    // Add some animations to elements
+    document.addEventListener('DOMContentLoaded', function () {
+        // Animate feature cards on scroll
+        const featureCards = document.querySelectorAll('.feature-card');
+
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.style.opacity = 1;
+                    entry.target.style.transform = 'translateY(0)';
+                }
+            });
+        }, { threshold: 0.1 });
+
+        featureCards.forEach(card => {
+            card.style.opacity = 0;
+            card.style.transform = 'translateY(20px)';
+            card.style.transition = 'opacity 0.5s ease, transform 0.5s ease';
+            observer.observe(card);
+        });
+
+        // Animate terminal text
+        const terminalLines = document.querySelectorAll('.terminal-content div');
+        terminalLines.forEach((line, index) => {
+            setTimeout(() => {
+                line.style.opacity = 1;
+            }, 500 + (index * 500));
+        });
+    });
+</script>
+<style>
+    .terminal-content div {
+        opacity: 0;
+        transition: opacity 0.3s ease;
+    }
+</style>
+{% endblock %}

@@ -1,0 +1,15 @@
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        // Skip processing if no results
+        if (document.querySelector('.jumbotron')) {
+            return;
+        }
+
+        // Check if this is a DAST-only scan
+        const isDastOnly = {% if is_dast_only %}true{% else %}false{% endif %};
+        const scanType = "{{ scan_type if scan_type else 'all' }}";
+        console.log("Scan type:", scanType);
+        console.log("Is DAST only:", isDastOnly);
+
+        // Parse the markdown content to extract data
+        const markdownContent = document.querySelector('.markdown-content').innerHTML;
