@@ -1,6 +1,6 @@
 # AISecuirtyFix
 
-![GitHub](https://img.shields.io/github/license/AymenAzizi/AI-security-fix)
+![GitHub](https://img.shields.io/github/license/SahbeniEya/AI-security-fix)
 ![Python](https://img.shields.io/badge/python-3.10%2B-blue)
 ![Version](https://img.shields.io/badge/version-1.0.0-brightgreen)
 
@@ -11,7 +11,7 @@
   </div>
 </p>
 
-CodeScanAI is a comprehensive security scanning platform that leverages AI to detect, analyze, and fix security vulnerabilities in your code. With support for multiple AI providers, advanced scanning techniques, and an intuitive interface, CodeScanAI helps developers build more secure applications with minimal effort.
+AISecurityFix is a comprehensive security scanning platform that leverages AI to detect, analyze, and fix security vulnerabilities in your code. With support for multiple AI providers, advanced scanning techniques, and an intuitive interface, CodeScanAI helps developers build more secure applications with minimal effort.
 
 ## 🚀 Key Features
 
