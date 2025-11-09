@@ -1,4 +1,4 @@
-# CodeScanAI
+# AISecuirtyFix
 
 ![GitHub](https://img.shields.io/github/license/AymenAzizi/AI-security-fix)
 ![Python](https://img.shields.io/badge/python-3.10%2B-blue)
@@ -113,7 +113,7 @@ CodeScanAI is a comprehensive security scanning platform that leverages AI to de
 #### Clone the Repository
 
 ```bash
-git clone https://github.com/AymenAzizi/AI-security-fix.git
+git clone https://github.com/SahbeniEya/AI-security-fix.git
 cd AI-security-fix
 pip install -r requirements.txt
 ```
